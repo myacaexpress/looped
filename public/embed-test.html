@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looped Widget Embed Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Looped Widget Embed Test</h1>
+        
+        <div class="section">
+            <h2>📋 About This Test</h2>
+            <p>This page demonstrates how to embed the Looped chat widget into any website. The widget appears as a floating chat button in the bottom-right corner.</p>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Implementation Methods</h2>
+            
+            <h3>Method 1: Auto-initialization with data attributes</h3>
+            <div class="code-block">
+&lt;script src="https://looped.app/looped-widget.js" 
+        data-company-id="test-company-123"
+        data-primary-color="#007bff"
+        data-position="bottom-right"&gt;&lt;/script&gt;
+            </div>
+
+            <h3>Method 2: Manual initialization</h3>
+            <div class="code-block">
+&lt;script src="https://looped.app/looped-widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  LoopedWidget.init({
+    companyId: 'test-company-123',
+    primaryColor: '#007bff',
+    greeting: 'Hello! How can we help you today?',
+    placeholder: 'Type your message...',
+    onWidgetLoad: () => console.log('Widget loaded'),
+    onMessageSent: (data) => console.log('Message sent:', data)
+  });
+&lt;/script&gt;
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎮 Widget Controls</h2>
+            <p>Use these buttons to test the widget programmatically:</p>
+            
+            <button class="button" onclick="testOpen()">Open Widget</button>
+            <button class="button" onclick="testClose()">Close Widget</button>
+            <button class="button" onclick="testToggle()">Toggle Widget</button>
+            <button class="button" onclick="testStatus()">Check Status</button>
+            <button class="button" onclick="testDestroy()">Destroy Widget</button>
+            <button class="button" onclick="testReinitialize()">Reinitialize</button>
+            
+            <div id="status"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Event Logs</h2>
+            <p>Widget events will appear here:</p>
+            <div id="eventLog" style="background: #f1f3f4; padding: 15px; border-radius: 4px; min-height: 100px; font-family: monospace; font-size: 12px; white-space: pre-wrap;"></div>
+            <button class="button" onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <div class="section">
+            <h2>📝 Sample Content</h2>
+            <p>This is sample content to demonstrate how the widget integrates with existing page content. The widget should not interfere with the page layout or functionality.</p>
+            
+            <h3>Features Tested:</h3>
+            <ul>
+                <li>✅ Widget initialization and loading</li>
+                <li>✅ Floating button positioning</li>
+                <li>✅ Iframe communication</li>
+                <li>✅ Message posting between frames</li>
+                <li>✅ Responsive design</li>
+                <li>✅ Event callbacks</li>
+                <li>✅ Programmatic control</li>
+            </ul>
+
+            <h3>Test Scenarios:</h3>
+            <ol>
+                <li>Click the floating chat button to open the widget</li>
+                <li>Send a test message</li>
+                <li>Observe the typing indicator</li>
+                <li>Check the AI response</li>
+                <li>Test the close functionality</li>
+                <li>Use the programmatic controls above</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load the Looped Widget -->
+    <script src="/looped-widget.js"></script>
+    
+    <script>
+        // Initialize the widget
+        LoopedWidget.init({
+            companyId: 'test-company-123',
+            primaryColor: '#007bff',
+            greeting: 'Hello! How can we help you today?',
+            placeholder: 'Type your message here...',
+            widgetUrl: 'http://localhost:3000', // For local testing
+            onWidgetLoad: () => {
+                logEvent('Widget loaded successfully');
+                updateStatus('Widget initialized', 'success');
+            },
+            onWidgetOpen: () => {
+                logEvent('Widget opened');
+            },
+            onWidgetClose: () => {
+                logEvent('Widget closed');
+            },
+            onMessageSent: (data) => {
+                logEvent(`Message sent: ${data.message}`);
+            }
+        });
+
+        // Test functions
+        function testOpen() {
+            LoopedWidget.open();
+            logEvent('Programmatically opened widget');
+        }
+
+        function testClose() {
+            LoopedWidget.close();
+            logEvent('Programmatically closed widget');
+        }
+
+        function testToggle() {
+            LoopedWidget.toggle();
+            logEvent('Programmatically toggled widget');
+        }
+
+        function testStatus() {
+            const isOpen = LoopedWidget.isOpen();
+            logEvent(`Widget status: ${isOpen ? 'Open' : 'Closed'}`);
+            updateStatus(`Widget is ${isOpen ? 'open' : 'closed'}`, 'success');
+        }
+
+        function testDestroy() {
+            LoopedWidget.destroy();
+            logEvent('Widget destroyed');
+            updateStatus('Widget destroyed', 'error');
+        }
+
+        function testReinitialize() {
+            LoopedWidget.init({
+                companyId: 'test-company-123',
+                primaryColor: '#28a745',
+                greeting: 'Welcome back! How can we help?',
+                placeholder: 'Type your message here...',
+                widgetUrl: 'http://localhost:3000'
+            });
+            logEvent('Widget reinitialized with new config');
+            updateStatus('Widget reinitialized', 'success');
+        }
+
+        // Utility functions
+        function logEvent(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('eventLog');
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('status');
+            statusElement.className = `status ${type}`;
+            statusElement.textContent = message;
+        }
+
+        function clearLog() {
+            document.getElementById('eventLog').textContent = '';
+        }
+
+        // Listen for widget events
+        window.addEventListener('message', (event) => {
+            if (event.origin === 'http://localhost:3000') {
+                logEvent(`Received event: ${event.data.type}`);
+                if (event.data.data) {
+                    logEvent(`Event data: ${JSON.stringify(event.data.data)}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

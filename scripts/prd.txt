@@ -1,0 +1,204 @@
+Product Requirements Document (PRD): Looped V1.0
+1. Introduction & Goal
+Looped is an AI-powered chatbot solution designed to provide instant, accurate, and human-like internal support to employees within client organizations. The primary goal for V1.0 is to significantly reduce the workload on internal support teams (IT, HR, Operations, etc.) by automating responses to common queries, improving employee productivity by providing quick answers, and establishing a scalable support infrastructure. A key innovation is the intelligent, tiered AI-to-human handoff mechanism ("Green/Yellow/Red" states) to optimize agent intervention.
+This PRD outlines the V1.0 requirements, leveraging a React frontend, LangGraph.js for AI agent orchestration, and Supabase for backend-as-a-service (BaaS) functionalities including authentication, database, storage, and real-time capabilities.
+2. Target Users
+Employees (End-Users of Client Company): Any employee seeking internal support via the Looped chat widget.
+Support Agents/Admins (Client Company): Staff responsible for managing the Looped system for their company, overseeing AI performance, handling escalated queries (Yellow/Red states), providing direct support when needed, and managing their company's knowledge base.
+Looped Super Admins (Internal - Looped Company): Looped company staff for system-wide monitoring, client management, and platform maintenance (largely out of scope for this client-facing product V1.0 but relevant for overall architecture).
+3. User Stories
+3.1. Employee (End-User)
+US-E01: As an employee, I want to easily ask questions via a chat widget embedded in our internal tools (e.g., company portal, dashboard) so I can get quick answers without waiting for a human agent.
+US-E02: As an employee, I want the AI (Everly) to understand my questions in natural language, so I don't have to use specific keywords or phrases.
+US-E03: As an employee, I want the AI to provide answers sourced directly from our company's official knowledge base.
+US-E04: As an employee, I want the option for my query to be escalated to a human agent if the AI cannot resolve my issue or if I explicitly request it.
+US-E05: As an employee, I want to be clearly informed if I am talking to the AI (Everly) or a human agent.
+US-E06: As an employee, I want to be able to confirm if the AI's answer resolved my question (e.g., "Yes" / "I have something else").
+US-E07: As an employee, I want to see a history of my current chat conversation within the widget.
+3.2. Support Agent/Admin (Client Company)
+US-A01: As an admin, I want a simple, multi-step onboarding process to sign up my company and configure Looped.
+US-A01.1: Provide company information (name, admin email, password).
+US-A01.2: Receive and install a JavaScript snippet to integrate the Looped widget.
+US-A01.3: Easily upload our company's knowledge base documents (PDFs, DOCX, TXT).
+US-A02: As an admin, I want to view ongoing, resolved, and unresolved AI conversations in an inbox/dashboard.
+US-A03: As an admin, I want conversations in the inbox to be visually distinguished by color (Green, Yellow, Red) based on the AI's confidence and need for human intervention.
+US-A03.1: Green: AI is handling confidently or resolved.
+US-A03.2: Yellow: AI is unsure and suggests pre-defined responses from the KB for me to select.
+US-A03.3: Red: AI is stuck, requires my immediate attention, and is prioritized in the inbox.
+US-A04: As an admin, I want to be notified (visually in the inbox) when a conversation enters a Yellow or Red state.
+US-A05: As an admin, when a chat is in a "Yellow" state (AI unsure), I want the AI to present me with up to three suggested responses sourced from the knowledge base, so I can quickly click one to send to the employee.
+US-A06: As an admin, I want to be able to take over a chat from the AI at any point and respond directly to the employee by typing a message.
+US-A07: As an admin, after I've intervened in a chat, I want the system to acknowledge my input and potentially allow the AI to continue monitoring or close the chat.
+US-A08: As an admin, I want to mark conversations as resolved.
+US-A09: As an admin, I want to manage (view, upload new, delete, re-sync) the documents in our company's knowledge base.
+US-A10: As an admin, I want to see basic analytics on AI performance (e.g., number of AI-resolved conversations, number of escalations).
+US-A11: As an admin, I want to manage my profile and settings within the Looped dashboard.
+US-A12: As an admin, I want to filter conversations in my inbox by status (e.g., Live, Resolved, Unresolved).
+US-A13: As an admin, when actively engaged in a chat card, I want the input field to auto-focus.
+US-A14: As an admin, I want to send attachments in a chat (future, but consider for design).
+US-A15: As an admin, I want to be able to search for conversations or users.
+4. Key Features (V1.0)
+4.1. User-Facing (Employee Experience via Chat Widget)
+4.1.1. Embeddable Chat Widget:
+Provided as a JavaScript snippet for easy integration into client company's web applications.
+Displays AI persona ("Everly" powered by "Looped").
+Input field for user queries (natural language).
+Displays chat history (current session).
+"Thinking/Typing" indicators for AI.
+Options to confirm resolution ("Yes" / "I have something else").
+Clear indication of handoff to a human agent.
+4.1.2. Natural Language Understanding (NLU): AI comprehends and responds to employee queries based on context and KB.
+4.1.3. Knowledge Base Retrieval (RAG): AI sources answers primarily from the uploaded company-specific knowledge base.
+4.1.4. Human Handoff Request: Mechanism for the employee to request escalation or for the AI to initiate handoff based on its confidence.
+4.2. Admin-Facing (Client Company Dashboard - "Looped Dashboard")
+4.2.1. Authentication & Onboarding Flow:
+Email/Password Sign Up & Sign In (Supabase Auth).
+Google OAuth Sign Up & Sign In (Supabase Auth).
+Multi-step onboarding:
+Step 1: Company Information (Name, Admin Email - stored in Supabase DB).
+Step 2: Install Looped (Provide JS snippet, user confirms installation).
+Step 3: Upload Knowledge Base (Drag-and-drop or browse for PDF, DOCX, TXT files - stored in Supabase Storage).
+4.2.2. Inbox Management (InboxPage):
+View Live, Resolved, Unresolved conversations in a card-based grid.
+Conversation Card States & Visuals:
+Green State (AI Confident / Resolved):
+Card has a green visual cue (e.g., top border/accent).
+AI messages displayed.
+Upon employee confirmation ("Yes"), card animates to "Resolved by Everly" and moves to Resolved filter.
+Yellow State (AI Needs Assistance - active_human_needed status in frontend code):
+Card has a yellow/orange visual cue (e.g., top border/accent, pulsing dot, "Needs Attention" tag as in ConversationCard component).
+AI presents up to 3 clickable suggested responses to the agent within the card.
+Agent can click a suggestion, which is then sent to the employee via the AI.
+Agent can choose to "Take control of chat."
+Red State (AI Stuck - Escalated):
+Card has a red visual cue (e.g., top border/accent).
+Card is prioritized in the inbox view (e.g., moved to top-left).
+Agent is expected to type a direct response; no AI suggestions provided.
+Ability to select a conversation card to view full history and interact. Selected card is visually highlighted (e.g. ring-2 ring-purple-600 from code).
+Agent input field within each card to type messages.
+Agent can send messages (triggering handleSendMessage which updates state and Supabase).
+Display of sender (User, Everly (AI), You (Agent)) with distinct chat bubble styling.
+"AI Assisted" (Zap icon) indicator on conversations.
+Timestamp and date for messages and conversations.
+4.2.3. Knowledge Base Management (Knowledge Base Page - placeholder in code):
+Interface to upload new documents to Supabase Storage.
+List existing documents with options to delete or trigger a re-sync/re-index.
+4.2.4. Basic Analytics Dashboard (Dashboard Page - placeholder in code):
+Total conversations.
+AI resolution rate (e.g., "12,421 Resolved with AI" from code).
+Number of escalations (Yellow/Red states).
+Most frequent topics/questions (Post V1, but track data).
+4.2.5. Settings & Profile (Settings, Profile Pages - placeholders in code):
+Agent profile management (name, email).
+Company settings (name).
+(Future: Widget customization - primary color).
+4.3. Core AI Logic (Managed by LangGraph.js on Supabase Edge Functions)
+4.3.1. Conversation State Machine: LangGraph.js will manage the flow of a conversation through different states (e.g., awaiting_user_input, retrieving_from_kb, generating_ai_response, awaiting_agent_clarification_yellow, awaiting_agent_intervention_red, resolved).
+4.3.2. Knowledge Retrieval Node: Retrieves relevant chunks from the vector store (Supabase pgvector).
+4.3.3. Response Generation Node: Uses an LLM (e.g., OpenAI API) to generate answers based on retrieved context.
+4.3.4. Confidence Scoring & Routing Node: Determines AI confidence.
+High confidence -> Green State (direct answer).
+Medium confidence -> Yellow State (generates 3 suggestions for agent, routes to agent inbox).
+Low confidence / explicit escalation -> Red State (routes to agent inbox, prioritizes).
+4.3.5. Agent Interaction Node: Handles messages from agents, updates conversation state, and potentially routes back to AI for continued handling or closure.
+4.3.6. Tool Usage: AI may use tools (defined in LangGraph) like "request_human_takeover" or "confirm_resolution_with_user".
+5. Non-Functional Requirements
+5.1. Scalability:
+System must handle a varying number of concurrent users and client companies.
+Supabase services (DB, Auth, Storage, Functions, Realtime) provide inherent scalability.
+LangGraph.js logic within Supabase Edge Functions must be designed for concurrent execution.
+5.2. Performance:
+AI responses should be near real-time (target < 3-5 seconds for most queries after user input).
+Widget loading time must be fast.
+Supabase query optimization will be necessary for chat history and KB retrieval.
+5.3. Reliability:
+High availability (target 99.9% uptime), relying on Supabase's uptime.
+Graceful error handling in frontend and backend.
+5.4. Security:
+Data encryption at rest and in transit (handled by Supabase).
+Tenant Isolation: Client company data (KB, conversations, user info) MUST be strictly segregated. Implemented via Row Level Security (RLS) in Supabase and careful API design. Each API call must be authenticated and authorized for the specific tenant_id.
+Role-Based Access Control (RBAC): Supabase Auth for admin roles within a client company.
+Secure API endpoints (Supabase Edge Functions with auth protection).
+Input validation and sanitization.
+5.5. Usability:
+Intuitive interfaces for both employees and client admins, as demonstrated by the provided React code and design philosophy comments.
+Minimal clicks for agents in "Yellow" state.
+5.6. Maintainability:
+Modular frontend (React components).
+Well-defined LangGraph graphs for AI logic.
+Leverage Supabase managed services to reduce operational overhead.
+5.7. Cost-Effectiveness:
+Pay-per-use model facilitated by Supabase and LLM API calls. Monitor Supabase and LLM API costs.
+6. Technical Considerations (Supabase & LangGraph.js Stack)
+6.1. Frontend:
+React (as per provided code) with TailwindCSS.
+State Management: React Context or Zustand/Redux for more complex global state if needed.
+Real-time updates via Supabase Realtime Subscriptions for chat messages and inbox status changes.
+6.2. Backend (Supabase):
+Authentication: Supabase Auth (Email/Password, Google OAuth). JWTs for session management.
+Database: Supabase Postgres.
+companies: id, name, admin_user_id, configuration_details.
+users (Supabase auth.users extended): id, company_id, role (employee, admin).
+knowledge_base_documents: id, company_id, file_name, storage_path, status (pending, processing, active, error), indexed_at, metadata.
+knowledge_base_chunks: id, document_id, chunk_text, embedding (vector type for pgvector).
+conversations: id, company_id, employee_user_id, assigned_agent_user_id (nullable), status (green, yellow, red, resolved_ai, resolved_human, typing_ai, typing_user), created_at, updated_at, last_message_preview.
+messages: id, conversation_id, sender_user_id (nullable, for employee/agent), sender_type (user, ai, agent), content, created_at, ai_suggestions (JSONB, for yellow state).
+RLS (Row Level Security) will be heavily used on all tables to ensure tenant isolation.
+Storage: Supabase Storage for uploaded knowledge base documents (PDFs, etc.).
+Edge Functions (JavaScript/TypeScript):
+To host LangGraph.js AI agent/orchestration logic.
+API endpoints for chat interactions, KB management, etc.
+KB Processing Pipeline:
+Function triggered by Supabase Storage upload.
+Text extraction (e.g., pdf-parse for PDFs).
+Text chunking.
+Embedding generation (API call to OpenAI Embeddings API or similar).
+Storing text chunks and embeddings in knowledge_base_chunks table.
+Vector Search: Supabase Postgres with pgvector extension for similarity search on knowledge_base_chunks.embedding.
+6.3. AI Orchestration & LLM:
+LangGraph.js: To define and run the conversational AI agent graphs within Supabase Edge Functions. Will manage state, tool usage, and LLM calls.
+LLM Integration: API calls to a third-party LLM (e.g., OpenAI's GPT series, Anthropic's Claude) for NLU, response generation, and potentially summarization or suggestion generation. Securely store API keys.
+6.4. Real-time Communication:
+Supabase Realtime Subscriptions: Frontend subscribes to changes in conversations and messages tables for live updates in the chat widget and agent inbox.
+7. Data Schema (Supabase Postgres - Key Tables)
+(Covered in 6.2 Database section)
+8. API Endpoints (Conceptual - via Supabase Edge Functions)
+POST /api/v1/chat/message: Employee sends a message.
+POST /api/v1/agent/chat/{convId}/message: Agent sends a message.
+POST /api/v1/agent/chat/{convId}/select-suggestion: Agent selects an AI suggestion (Yellow state).
+POST /api/v1/agent/chat/{convId}/takeover: Agent takes full control.
+POST /api/v1/kb/upload: Admin uploads a KB document.
+GET /api/v1/kb/documents: Admin lists KB documents.
+DELETE /api/v1/kb/documents/{docId}: Admin deletes a KB document.
+GET /api/v1/agent/inbox: Retrieves conversations for the agent inbox (with filters).
+GET /api/v1/analytics/summary: Retrieves basic analytics.
+(All endpoints will be protected by Supabase Auth and enforce RLS for tenant data access).
+9. Success Metrics (V1.0)
+Number of successful client company onboardings.
+Daily/Monthly Active Users (Employees using the chat widget).
+Daily/Monthly Active Agents (Admins using the Looped Dashboard).
+AI Resolution Rate: Percentage of queries resolved by AI without human agent typing a direct response (includes AI direct + AI via agent-selected yellow suggestion).
+Agent Effort Reduction:
+Average time spent by agents per interaction.
+Percentage of "Yellow" state resolutions vs. "Red" state resolutions.
+User Satisfaction Score (CSAT): Collected from employees after chat resolution ("Does that resolve your question?").
+System uptime and API latency (Supabase & Edge Function performance).
+Knowledge Base ingestion success rate and processing time.
+10. Future Considerations (Post V1.0)
+Advanced analytics and reporting (most common questions, resolution times by topic).
+Integrations with other internal tools (e.g., Slack, Microsoft Teams, Jira).
+Proactive support (AI identifying potential issues based on user activity or KB changes).
+Voice input/output for the chat widget.
+More sophisticated AI persona customization.
+Multi-language support.
+Agent-to-agent chat or notes within conversations.
+More granular RBAC within client companies.
+Ability for AI to learn from agent corrections in Red/Yellow states to improve its KB or future suggestions.
+11. Open Questions / Assumptions
+Assumption: Client companies will have knowledge bases in common formats (PDF, DOCX, TXT).
+Assumption: A single LLM provider (e.g., OpenAI) will be sufficient for V1.0 NLU and generation.
+Decision needed: Specific LLM model to be used.
+Decision needed: Max file size for KB uploads.
+The "Unlock 90% effort savings" claim (seen in a video screenshot modal after KB upload) is an aspirational goal; V1.0 success metrics will measure actuals.
+The frontend code's initialMockConversations status field (active_human_needed, typing_ai, active_ai, resolved_ai) will map directly to the Green/Yellow/Red logic.
+This detailed PRD should provide a solid foundation for developing Looped V1.0 using LangGraph.js and Supabase, taking into account all the insights gathered.
