@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Attempt to fix white-on-white text issues where text-white is used on a white background */
+[style*="--background:white"] [class*="text-white"],
+[style*="--background:#fff"] [class*="text-white"],
+[style*="--background:#ffffff"] [class*="text-white"],
+.bg-white [class*="text-white"],
+body[style*="--background:white"] [class*="text-white"],
+body[style*="--background:#fff"] [class*="text-white"],
+body[style*="--background:#ffffff"] [class*="text-white"] {
+  color: var(--foreground) !important;
+}
